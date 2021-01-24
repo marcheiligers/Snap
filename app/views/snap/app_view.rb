@@ -36,15 +36,22 @@ class Snap
     body do
       shell do
         # Replace example content below with custom shell content
-        minimum_size 320, 240
+        minimum_size 640, 480
         image File.join(APP_ROOT, 'package', 'windows', "Snap.ico") if OS.windows?
         text "Snap"
 
-        grid_layout(2, false)
-        layout_data :fill, :fill, true, true
+        sash_form do
+          layout_data(:fill, :fill, true, true) # { height_hint 200 }
+          sash_width 10
+          # orientation :horizontal
+          weights 1, 2
 
-        @editor = init_editor
-        @stage = init_stage
+          # grid_layout(2, false)
+          # layout_data :fill, :fill, true, true
+
+          @editor = init_editor
+          @stage = init_stage
+        end
         init_menu
       end
     end
@@ -54,7 +61,8 @@ class Snap
       editor = nil
 
       composite do
-        row_layout :vertical
+        layout_data(:fill, :fill, true, true)
+        grid_layout 1, true
 
         editor = code_text do
           layout_data :fill, :fill, true, true
@@ -67,13 +75,35 @@ class Snap
           left_margin 5
         end
 
-        button do
-          text 'Run'
+        composite do
+          row_layout
 
-          on_widget_selected do
-            puts "Run! #{@stage} #{editor} #{editor.text}"
-            @stage.turtle.run(editor.text)
-            @stage.redraw
+          button do
+            text 'Run'
+
+            on_widget_selected do
+              # puts "Run! #{@stage} #{editor} #{editor.text}"
+              @stage.turtle.run(editor.text)
+              @stage.paint
+            end
+          end
+
+          button do
+            text 'Stop'
+
+            on_widget_selected do
+              @stage.turtle.stop
+              @stage.paint
+            end
+          end
+
+          button do
+            text 'Reset'
+
+            on_widget_selected do
+              @stage.reset
+              @stage.paint
+            end
           end
         end
 

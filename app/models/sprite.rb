@@ -1,8 +1,9 @@
 class Sprite
-  # TODO: draw sprites centered
+  attr_reader :orig_image, :orig_width, :orig_height
+  attr_reader :image, :display, :name, :lock
+  attr_accessor :x, :y, :r, :z, :visible
 
-  attr_reader :image, :display, :name
-  attr_accessor :x, :y, :r, :z
+  alias_method :visible?, :visible
 
   Gfx = org.eclipse.swt.graphics
 
@@ -10,10 +11,19 @@ class Sprite
     @display = display.swt_display
     @name = name
 
+    data = Gfx.ImageData.new(path_from_default)
+    @orig_image = Gfx.Image.new(@display, data, data)
+    @orig_width = data.width
+    @orig_height = data.height
+
     @x = x
     @y = y
     @r = r
     @z = z
+
+    @visible = true
+
+    @lock = Mutex.new
   end
 
   def goto(x, y)
@@ -21,64 +31,121 @@ class Sprite
     @y = y
   end
 
+  def face(dir)
+    @r = dir
+    dispose_rotated_image
+  end
+
   def turn(a)
     @r = (r + a) % 360
+    dispose_rotated_image
   end
 
   def path_from_default
     File.expand_path("../../images/#{name}.png", __dir__)
   end
 
-  def image
-    @image ||= Gfx.Image.new(display, path_from_default)
-  end
-
-  def image_data
-    @data ||= image.get_image_data
-  end
-
-  def width
-    image_data.width
-  end
-
-  def height
-    image_data.height
-  end
-
   def draw(stage, gc)
-    gc.advanced = true
-    puts 'Advanced graphics not supported' and return unless gc.advanced?
+    return unless visible?
 
-    w = h = 0
-    if width > height
-      w = m = width * z.to_f / 100.0
-      h = height.to_f / width * m
-    else
-      h = m = height * z.to_f / 100.0
-      w = width.to_f / height * m
-    end
-
-    transformed(gc, stage.zoom, w, h) do
-      gc.draw_image(image, 0, 0, width, height, x, y, w.round, h.round)
+    w, h = rotated_dimensions(*zoomed_dimensions)
+    lock.synchronize do
+      gc.draw_image(rotated_image(gc.device), 0, 0, w, h, x - w / 2, y - h / 2, w, h)
     end
   end
 
   private
 
-  def transformed(gc, zoom, w, h)
-    old_transform = Gfx.Transform.new(gc.device)
-    gc.get_transform(old_transform)
+  def zoomed_dimensions
+    w = h = 0
+    if orig_width > orig_height
+      w = orig_width * z.to_f / 100.0
+      h = orig_height.to_f / orig_width * w
+    else
+      h = orig_height * z.to_f / 100.0
+      w = orig_width.to_f / orig_height * h
+    end
 
+    [w, h]
+  end
+
+  def rotated_dimensions(w, h)
+    w1 = h1 = 0
+    r1 = r % 180
+
+    if r1 < 90
+      w1 = w * cos(r1) + h * sin(r1)
+      h1 = w * sin(r1) + h * cos(r1)
+    else
+      w1 = h * cos(r1 - 90) + w * sin(r1 - 90)
+      h1 = h * sin(r1 - 90) + w * cos(r1 - 90)
+    end
+
+    [w1, h1]
+  end
+
+  def rotated_image(device)
+    @rotated_image ||= begin
+      w1, h1 = rotated_dimensions(*zoomed_dimensions).map { |dim| dim.ceil + 2 }
+      result = Gfx.Image.new(device, w1, h1)
+      gc = Gfx.GC.new(result)
+      gc.advanced = true
+
+      gc.alpha = 0
+      gc.fill_rectangle(0, 0, w1, h1)
+
+      gc.alpha = 255
+      rotation_transform(gc) do
+        gc.draw_image(orig_image, 0, 0)
+        # gc.draw_rectangle(0, 0, orig_width, orig_height)
+        # gc.draw_rectangle(1, 1, orig_width - 1, orig_height - 1)
+        # gc.draw_rectangle(2, 2, orig_width - 2, orig_height - 2)
+      end
+
+      result
+    rescue => e
+      puts e.full_message
+    ensure
+      gc.dispose if gc
+    end
+  end
+
+  def dispose_rotated_image
+    lock.synchronize do
+      if @rotated_image
+        @rotated_image.dispose
+        @rotated_image = nil
+      end
+    end
+  end
+
+  def rotation_transform(gc)
     transform = Gfx.Transform.new(gc.display)
-    transform.scale(zoom, zoom)
-    transform.translate(x + w / 2, y + h / 2)
+
+    w1, h1 = rotated_dimensions(*zoomed_dimensions)
+    transform.translate(w1 / 2, h1 / 2)
+
+    transform.scale(z / 100.0, z / 100.0)
     transform.rotate(r)
-    transform.translate(-x - w / 2, -y - h / 2)
+    transform.translate(-orig_width / 2, -orig_height / 2)
 
     gc.set_transform(transform)
     yield
+  rescue => e
+    puts e.full_message
   ensure
-    gc.set_transform(old_transform)
     transform.dispose
+  end
+
+  def rad(r = @r)
+    (r / 360.0) * (Math::PI * 2)
+  end
+
+  def cos(r = @r)
+    Math::cos(rad(r))
+  end
+
+  def sin(r = @r)
+    Math::sin(rad(r))
   end
 end
