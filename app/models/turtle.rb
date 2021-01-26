@@ -73,7 +73,11 @@ class Turtle < Sprite
   def run(code)
     return unless @thread.nil?
 
-    @thread = Thread.new { sleep 0.1; eval code; @thread = nil }
+    @thread = Thread.new do
+      sleep 0.1
+      eval code
+      @thread = nil
+    end
   rescue => e
     puts e.full_message
   end

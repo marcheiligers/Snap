@@ -49,7 +49,7 @@ class Stage
   end
 
   def paint
-    async_exec { @widget.redraw } if parent
+    sync_exec { @widget.redraw } if parent
   rescue => e
     puts e.full_message
   end
