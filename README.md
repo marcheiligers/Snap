@@ -14,6 +14,15 @@ See the [first demo on YouTube](https://youtu.be/RmqDCCKt7sc).
 ** [Transform](http://download.eclipse.org/rt/rap/doc/3.1/guide/reference/api/org/eclipse/swt/graphics/Transform.html)
 ** [SWT source](https://github.com/eclipse/eclipse.platform.swt)
 
+## Notes
+
+### Convert a .mov into a .gif and try optimize
+
+``` bash
+ffmpeg -i 21-01-24_snap_demo.mov -pix_fmt rgb24 -r 24 -s 1440x900 snap_demo1.gif
+convert -layers Optimize snap_demo1.gif snap_demo1o.gif
+```
+
 ## Contributing
 
 * Check out the latest master to make sure the feature hasn't been

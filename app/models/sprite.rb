@@ -1,5 +1,5 @@
 class Sprite
-  attr_reader :orig_image, :orig_width, :orig_height
+  attr_reader :orig_image, :orig_data, :orig_width, :orig_height
   attr_reader :image, :display, :name, :lock
   attr_accessor :x, :y, :r, :z, :visible
 
@@ -11,10 +11,10 @@ class Sprite
     @display = display.swt_display
     @name = name
 
-    data = Gfx.ImageData.new(path_from_default)
-    @orig_image = Gfx.Image.new(@display, data, data)
-    @orig_width = data.width
-    @orig_height = data.height
+    @orig_data = Gfx.ImageData.new(path_from_default)
+    @orig_image = Gfx.Image.new(@display, @orig_data)
+    @orig_width = @orig_data.width
+    @orig_height = @orig_data.height
 
     @x = x
     @y = y
@@ -81,20 +81,19 @@ class Sprite
       h1 = h * sin(r1 - 90) + w * cos(r1 - 90)
     end
 
-    [w1, h1]
+    # weirdly, this makes no difference to the placement of the image
+    #   but fixes an issue where the top part of the image is cut off when drawing transparently
+    [w1.ceil * 2, h1.ceil * 2]
   end
 
   def rotated_image(device)
     @rotated_image ||= begin
-      w1, h1 = rotated_dimensions(*zoomed_dimensions).map { |dim| dim.ceil + 2 }
-      result = Gfx.Image.new(device, w1, h1)
+      w1, h1 = rotated_dimensions(*zoomed_dimensions)
+      transparent_image_data = make_tranparent_image_data(w1, h1)
+      result = Gfx.Image.new(device, transparent_image_data)
       gc = Gfx.GC.new(result)
       gc.advanced = true
 
-      gc.alpha = 0
-      gc.fill_rectangle(0, 0, w1, h1)
-
-      gc.alpha = 255
       rotation_transform(gc) do
         gc.draw_image(orig_image, 0, 0)
         # gc.draw_rectangle(0, 0, orig_width, orig_height)
@@ -107,6 +106,12 @@ class Sprite
       puts e.full_message
     ensure
       gc.dispose if gc
+    end
+  end
+
+  def make_tranparent_image_data(w, h)
+    Gfx.ImageData.new(w, h, 32, orig_data.palette).tap do |image_data|
+      w.times { |x| h.times { |y| image_data.set_alpha(x, y, 0) } }
     end
   end
 
