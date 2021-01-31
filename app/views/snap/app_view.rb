@@ -1,4 +1,5 @@
 require_relative 'stage'
+require_relative '../../models/project'
 
 class Snap
   class AppView
@@ -22,13 +23,16 @@ class Snap
         on_about { display_about_dialog }
         on_preferences { display_preferences_dialog }
       end
+
+      @temp_project = Project.new
+      @project = nil
     end
 
     ## Use after_body block to setup observers for widgets in body
     #
-    # after_body {
-    #
-    # }
+    after_body {
+      @editor.text = @temp_project.code
+    }
 
     ## Add widget content inside custom shell body
     ## Top-most widget must be a shell or another custom shell
@@ -36,18 +40,15 @@ class Snap
     body do
       shell do
         # Replace example content below with custom shell content
-        minimum_size 640, 480
-        image File.join(APP_ROOT, 'package', 'windows', "Snap.ico") if OS.windows?
+        size 640, 480
+        minimum_size 320, 240
+        image File.join(APP_ROOT, 'package', 'windows', 'Snap.ico') if OS.windows?
         text "Snap"
 
         sash_form do
           layout_data(:fill, :fill, true, true) # { height_hint 200 }
           sash_width 10
-          # orientation :horizontal
           weights 1, 2
-
-          # grid_layout(2, false)
-          # layout_data :fill, :fill, true, true
 
           @editor = init_editor
           @stage = init_stage
@@ -78,18 +79,22 @@ class Snap
         composite do
           row_layout
 
-          button do
-            text 'Run'
+          button(:flat) do
+            image File.join(APP_ROOT, 'images', 'play.png')
 
             on_widget_selected do
-              # puts "Run! #{@stage} #{editor} #{editor.text}"
-              @stage.turtle.run(editor.text)
+              code = editor.text
+
+              @temp_project.code = code
+              @temp_project.save
+
+              @stage.turtle.run(code)
               @stage.paint
             end
           end
 
-          button do
-            text 'Stop'
+          button(:flat) do
+            image File.join(APP_ROOT, 'images', 'stop.png')
 
             on_widget_selected do
               @stage.turtle.stop
@@ -97,8 +102,8 @@ class Snap
             end
           end
 
-          button do
-            text 'Reset'
+          button(:flat) do |btn|
+            image File.join(APP_ROOT, 'images', 'reset.png')
 
             on_widget_selected do
               @stage.reset
@@ -106,9 +111,9 @@ class Snap
             end
           end
         end
-
-        editor
       end
+
+      editor
     end
 
     def init_stage
@@ -119,6 +124,18 @@ class Snap
       menu_bar do
         menu do
           text '&File'
+          menu_item do
+            text '&Open...'
+            on_widget_selected { do_open }
+          end
+          menu_item do
+            text '&Save...'
+            on_widget_selected { do_save }
+          end
+          menu_item do
+            text 'Save &As...'
+            on_widget_selected { do_save_as }
+          end
           menu_item do
             text '&About...'
             on_widget_selected { display_about_dialog }
@@ -169,6 +186,49 @@ class Snap
           end
         }
       }.open
+    end
+
+    def do_open
+      # TODO: Ask about current project save
+
+      filepath = get_filepath(:open)
+      @project = Project.new(filepath)
+      @editor.text = @project.code
+
+      puts @project.inspect
+    rescue => e
+      puts e.full_message
+    end
+
+    def do_save
+      return do_save_as if @project.nil?
+
+      @project.code = @editor.text
+      @project.save
+    end
+
+    def do_save_as
+      filepath = get_filepath(:save)
+
+      # TODO: ask about overwrite
+
+      if @project
+        @project.filepath = filepath
+      else
+        @project = Project.new(filepath)
+      end
+      @project.code = @editor.text
+      @project.save
+    rescue => e
+      puts e.full_message
+    end
+
+    def get_filepath(type)
+      save_dialog = file_dialog(type)
+      save_dialog.filter_extensions = %w[*.* *.snapproject]
+      save_dialog.filter_names = ['All Files', 'Snap Projects']
+      save_dialog.filter_index = 1
+      save_dialog.open
     end
   end
 end
