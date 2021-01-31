@@ -1,6 +1,7 @@
 require_relative '../../models/sprite'
 require_relative '../../models/turtle'
 require_relative '../../models/line'
+require_relative '../../models/oval'
 
 class Snap
   class Stage

@@ -65,6 +65,12 @@ class Snap
     end
     alias_method :pc, :pen_color
 
+    # TODO: Requires work, needs to draw under turtle
+    def circle(radius)
+      stage.add(Oval.new(x: x, y: y, w: radius * 2, h: radius * 2, color: color, width: width)) unless pen_up?
+      wait(0.01)
+    end
+
     def wait(time)
       stage.paint
       sleep time

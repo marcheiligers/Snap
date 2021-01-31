@@ -59,15 +59,7 @@ class Snap
 
       run_button = Swt::Widgets::Button.new(button_composite, Swt::SWT::FLAT)
       run_button.text = 'Run'
-      run_button.add_selection_listener do
-        code = editor.text
-
-        temp_project.code = code
-        temp_project.save
-
-        stage.turtle.run(code)
-        stage.paint
-      end
+      run_button.add_selection_listener { do_run }
 
       stop_button = Swt::Widgets::Button.new(button_composite, Swt::SWT::FLAT)
       stop_button.text = 'Stop'
@@ -144,6 +136,22 @@ class Snap
       edit_select_all_item.accelerator = (Swt::SWT::MOD1 + 'A'.ord)
       edit_select_all_item.add_selection_listener { editor.set_selection 0, editor.text.length }
 
+      code_menu_header = Swt::Widgets::MenuItem.new(menu_bar, Swt::SWT::CASCADE)
+      code_menu_header.text = '&Code'
+
+      code_menu = Swt::Widgets::Menu.new(shell, Swt::SWT::DROP_DOWN)
+      code_menu_header.menu = code_menu
+
+      code_run_item = Swt::Widgets::MenuItem.new(code_menu, Swt::SWT::PUSH)
+      code_run_item.text = "&Run All\t⇧⌘↵"
+      code_run_item.accelerator = (Swt::SWT::SHIFT | Swt::SWT::MOD1 | Swt::SWT::CR)
+      code_run_item.add_selection_listener { do_run }
+
+      code_run_item = Swt::Widgets::MenuItem.new(code_menu, Swt::SWT::PUSH)
+      code_run_item.text = "&Run Selection\t⌘↵"
+      code_run_item.accelerator = (Swt::SWT::MOD1 | Swt::SWT::CR)
+      code_run_item.add_selection_listener { do_run_selection }
+
       shell.menu_bar = menu_bar
     end
 
@@ -180,6 +188,38 @@ class Snap
       @project.save
     rescue => e
       puts e.full_message
+    end
+
+    def do_run
+      code = editor.text
+
+      temp_project.code = code
+      temp_project.save
+
+      stage.turtle.run(code)
+      stage.paint
+    end
+
+    def do_run_selection
+      code = editor.text
+      sel = editor.selection
+      start = sel.x
+      fin = sel.y
+
+      while code[start -  1] != "\n" && start > 0 do
+        start -= 1
+      end
+      while code[fin] != "\n" && fin < code.length do
+        fin += 1
+      end
+
+      temp_project.code = code
+      temp_project.save
+
+      puts code[start...fin]
+
+      stage.turtle.run(code[start...fin])
+      stage.paint
     end
 
     def get_filepath(type)
