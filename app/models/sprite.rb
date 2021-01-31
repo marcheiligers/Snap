@@ -7,7 +7,7 @@ class Snap
     alias_method :visible?, :visible
 
     def initialize(display, name, x: 0, y: 0, r: 0, z: 100)
-      @display = display.swt_display
+      @display = display
       @name = name
 
       @orig_data = Gfx.ImageData.new(path_from_default)

@@ -4,31 +4,28 @@ require_relative '../../models/line'
 
 class Snap
   class Stage
-    include Glimmer::UI::CustomWidget
-
-    attr_reader :turtle
+    attr_reader :turtle, :canvas, :parent
 
     SIZE = 1_000.0 # Stage is a 1,000px square
 
-    attr_reader :turtle, :widget, :objects
+    attr_reader :turtle, :canvas, :objects
 
-    before_body do
-      @turtle = Turtle.new(display, self)
-      reset
-    end
+    def initialize(parent)
+      @parent = parent
+      @canvas = Swt::Widgets::Canvas.new(parent, 0)
+      canvas.layout = Swt::Layout::FillLayout.new
+      # layout_data :fill, :fill, true, true
 
-    body do
-      @widget = canvas do
-        layout_data :fill, :fill, true, true
-
-        on_paint_control do |e|
-          paint_background(e.gc)
-          transformed(e.gc) do |gc|
-            objects.each { |o| o.draw(self, gc) }
-            turtle.draw(self, gc)
-          end
+      canvas.add_paint_listener do |e|
+        paint_background(e.gc)
+        transformed(e.gc) do |gc|
+          objects.each { |o| o.draw(self, gc) }
+          turtle.draw(self, gc)
         end
       end
+
+      @turtle = Turtle.new(parent.display, self)
+      reset
     end
 
     def add(object)
@@ -45,11 +42,11 @@ class Snap
     end
 
     def client_area
-      widget.get_client_area
+      canvas.client_area
     end
 
     def paint
-      sync_exec { @widget.redraw } if parent
+      parent.display.sync_exec { canvas.redraw }
     rescue => e
       puts e.full_message
     end
@@ -69,8 +66,8 @@ class Snap
     def paint_background(gc)
       rc = client_area
 
-      gc.foreground = color(:dark_gray).swt_color
-      gc.background = color(:white).swt_color
+      gc.foreground = Gfx.Color.new(36, 36, 36)
+      gc.background = Gfx.Color.new(255, 255, 255)
 
       if rc.width > rc.height
         gc.fill_rectangle(0, 0, rc.height, rc.height)

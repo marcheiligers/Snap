@@ -7,12 +7,10 @@ See the [first demo on YouTube](https://youtu.be/RmqDCCKt7sc).
 ## Useful links
 
 * Java/Eclipse SWT Documentation
-** [Graphics Package](https://javadoc.scijava.org/Eclipse/org/eclipse/swt/graphics/package-summary.html)
-** [Canvas](https://help.eclipse.org/2020-12/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/api/org/eclipse/swt/widgets/Canvas.html)
-** [GC](https://www.eclipse.org/articles/Article-SWT-graphics/SWT_graphics.html)
-** [Images](https://www.eclipse.org/articles/Article-SWT-images/graphics-resources.html)
-** [Transform](http://download.eclipse.org/rt/rap/doc/3.1/guide/reference/api/org/eclipse/swt/graphics/Transform.html)
-** [SWT source](https://github.com/eclipse/eclipse.platform.swt)
+  * [Widgets Package](https://javadoc.scijava.org/Eclipse/org/eclipse/swt/widgets/package-summary.html)
+  * [Graphics Package](https://javadoc.scijava.org/Eclipse/org/eclipse/swt/graphics/package-summary.html)
+  * [Layouts Package](https://javadoc.scijava.org/Eclipse/org/eclipse/swt/layout/package-summary.html)
+  * [SWT source](https://github.com/eclipse/eclipse.platform.swt)
 
 ## Notes
 

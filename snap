@@ -1,0 +1,1 @@
+ruby -J-XstartOnFirstThread --dev app/snap.rb
