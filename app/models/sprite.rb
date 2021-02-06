@@ -1,12 +1,17 @@
+require_relative 'concerns/motion'
+require_relative 'concerns/looks'
+require_relative 'concerns/drawing'
+
 class Snap
   class Sprite
+    include Motion
+    include Looks
+    include Drawing
+
     attr_reader :orig_image, :orig_data, :orig_width, :orig_height
     attr_reader :image, :display, :name, :lock
-    attr_accessor :x, :y, :r, :z, :visible
 
-    alias_method :visible?, :visible
-
-    def initialize(display, name, x: 0, y: 0, r: 0, z: 100)
+    def initialize(display, name, x: 0, y: 0, direction: 0, size: 100)
       @display = display
       @name = name
 
@@ -15,29 +20,14 @@ class Snap
       @orig_width = @orig_data.width
       @orig_height = @orig_data.height
 
-      @x = x
-      @y = y
-      @r = r
-      @z = z
+      init_motion(x: x, y: y, direction: direction)
+      init_drawing(size: 1, color: [0, 0, 0, 255], up: false)
+      init_looks(size: size, visible: true)
+      @size = size
 
       @visible = true
 
       @lock = Mutex.new
-    end
-
-    def goto(x, y)
-      @x = x
-      @y = y
-    end
-
-    def face(dir)
-      @r = dir
-      dispose_rotated_image
-    end
-
-    def turn(a)
-      @r = (r + a) % 360
-      dispose_rotated_image
     end
 
     def path_from_default
@@ -53,15 +43,19 @@ class Snap
       end
     end
 
+    def redraw
+      stage.paint
+    end
+
     private
 
     def zoomed_dimensions
       w = h = 0
       if orig_width > orig_height
-        w = orig_width * z.to_f / 100.0
+        w = orig_width * size.to_f / 100.0
         h = orig_height.to_f / orig_width * w
       else
-        h = orig_height * z.to_f / 100.0
+        h = orig_height * size.to_f / 100.0
         w = orig_width.to_f / orig_height * h
       end
 
@@ -70,7 +64,7 @@ class Snap
 
     def rotated_dimensions(w, h)
       w1 = h1 = 0
-      r1 = r % 180
+      r1 = direction % 180
 
       if r1 < 90
         w1 = w * cos(r1) + h * sin(r1)
@@ -129,8 +123,8 @@ class Snap
       w1, h1 = rotated_dimensions(*zoomed_dimensions)
       transform.translate(w1 / 2, h1 / 2)
 
-      transform.scale(z / 100.0, z / 100.0)
-      transform.rotate(r)
+      transform.scale(size / 100.0, size / 100.0)
+      transform.rotate(direction)
       transform.translate(-orig_width / 2, -orig_height / 2)
 
       gc.set_transform(transform)
@@ -141,16 +135,16 @@ class Snap
       transform.dispose
     end
 
-    def rad(r = @r)
-      (r / 360.0) * (Math::PI * 2)
+    def rad(direction = @direction)
+      (direction / 360.0) * (Math::PI * 2)
     end
 
-    def cos(r = @r)
-      Math::cos(rad(r))
+    def cos(direction = @direction)
+      Math::cos(rad(direction))
     end
 
-    def sin(r = @r)
-      Math::sin(rad(r))
+    def sin(direction = @direction)
+      Math::sin(rad(direction))
     end
   end
 end
