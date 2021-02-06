@@ -13,9 +13,16 @@ class Snap
 
     def initialize(parent)
       @parent = parent
-      @canvas = Swt::Widgets::Canvas.new(parent, 0)
-      canvas.layout = Swt::Layout::FillLayout.new
-      # layout_data :fill, :fill, true, true
+
+      composite = Swt::Widgets::Composite.new(parent, 0)
+      layout = Swt::Layout::FillLayout.new
+      layout.marginWidth = 4
+      layout.marginHeight = 4
+      composite.layout = layout
+      composite.background = Config.instance.theme.background
+
+      @canvas = Swt::Widgets::Canvas.new(composite, 0)
+      canvas.background = Config.instance.theme.background
 
       canvas.add_paint_listener do |e|
         paint_background(e.gc)

@@ -10,6 +10,7 @@ See the [first demo on YouTube](https://youtu.be/RmqDCCKt7sc).
   * [Widgets Package](https://javadoc.scijava.org/Eclipse/org/eclipse/swt/widgets/package-summary.html)
   * [Graphics Package](https://javadoc.scijava.org/Eclipse/org/eclipse/swt/graphics/package-summary.html)
   * [Layouts Package](https://javadoc.scijava.org/Eclipse/org/eclipse/swt/layout/package-summary.html)
+  * [Custom Widgets](https://javadoc.scijava.org/Eclipse/org/eclipse/swt/custom/package-summary.html) - SashForm, CTabFolder and such
   * [SWT source](https://github.com/eclipse/eclipse.platform.swt)
 
 ## Notes

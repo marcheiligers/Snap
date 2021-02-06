@@ -52,6 +52,7 @@ class Snap
 
       composite = Swt::Widgets::Composite.new(parent, 0)
       composite.layout = Swt::Layout::GridLayout.new
+      composite.background = Config.instance.theme.background
 
       # TODO: Syntax highlighting
       # See: http://www.java2s.com/Code/Java/SWT-JFace-Eclipse/JavaSourcecodeViewer.htm
@@ -63,6 +64,7 @@ class Snap
 
       button_composite = Swt::Widgets::Composite.new(composite, 0)
       button_composite.layout = Swt::Layout::RowLayout.new
+      button_composite.background = Config.instance.theme.background
 
       # TODO: add button images
 

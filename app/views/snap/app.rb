@@ -19,12 +19,13 @@ class Snap
       shell.text = 'Snap'
       shell.set_size(640, 480)
       shell.set_minimum_size(320, 240)
+      shell.background = Config.instance.theme.background
       # image File.join(APP_ROOT, 'package', 'windows', 'Snap.ico') if OS.windows?
 
       shell.layout = Swt::Layout::FillLayout.new
       @sash_form = Swt::Custom::SashForm.new(shell, Swt::SWT::HORIZONTAL)
-      # sash_width 10
-      # weights 1, 2
+      @sash_form.sash_width = 8
+      @sash_form.background = Config.instance.theme.sash_color
 
       @menu = Menu.new(shell)
       @menu.subscribe(self)
@@ -51,7 +52,7 @@ class Snap
     end
 
     def on_save
-      return do_save_as if @project.nil?
+      return on_save_as if @project.nil?
 
       @project.code = @editor.code
       @project.save

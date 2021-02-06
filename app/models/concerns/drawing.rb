@@ -1,6 +1,10 @@
+require_relative 'color'
+
 class Snap
   class Sprite
     module Drawing
+      include Color
+
       attr_reader :pen_is_up
       alias_method :pen_up?, :pen_is_up
 
@@ -33,6 +37,12 @@ class Snap
         # TODO: support named colors
         if args.length == 0
           @pen_color
+        elsif args.length == 1
+          color = find_color(args[0])
+
+          raise "Unknown color #{args[0]}" unless color
+
+          @pen_color = color
         else
           @pen_color = *args + Array.new(4 - args.length, 255)
         end

@@ -3,6 +3,7 @@ $LOAD_PATH.unshift(File.expand_path('..', __FILE__))
 require 'bundler/setup'
 Bundler.require(:default)
 require_relative 'views/snap/app'
+require_relative 'models/config'
 
 class Snap
   Gfx = org.eclipse.swt.graphics
