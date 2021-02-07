@@ -1,8 +1,15 @@
+require 'forwardable'
+
 class Snap
   class Editor
+    extend Forwardable
     include Publisher
 
     attr_reader :editor, :parent
+
+    def_delegator :@editor, :text, :code
+    def_delegator :@editor, :text=, :code=
+    def_delegators :@editor, :cut, :copy, :paste, :selection, :set_selection
 
     def initialize(parent, text)
       @parent = parent
@@ -10,17 +17,8 @@ class Snap
       self.code = text
     end
 
-    def code
-      editor.text
-    end
-
-    def code=(text)
-      editor.text = text
-    end
-
     def selected_code
-      code = editor.text
-      sel = editor.selection
+      sel = selection
       start = sel.x
       fin = sel.y
 
@@ -32,22 +30,6 @@ class Snap
       end
 
       code[start...fin]
-    end
-
-    def cut
-      editor.cut
-    end
-
-    def copy
-      editor.copy
-    end
-
-    def paste
-      editor.paste
-    end
-
-    def set_selection(start, fin)
-      editor.set_selection(start, fin)
     end
 
     def init_editor
