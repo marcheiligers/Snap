@@ -1,5 +1,7 @@
+require_relative 'drawable'
+
 class Snap
-  class Line
+  class Line < Drawable
     attr_accessor :x1, :y1, :x2, :y2, :color, :width
 
     def self.simple(x1, y1, x2, y2)

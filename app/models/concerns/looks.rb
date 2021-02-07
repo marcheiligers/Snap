@@ -11,17 +11,15 @@ class Snap
 
       def hide_turtle
         @visible = false
-        redraw
       end
       alias_method :ht, :hide_turtle
 
       def show_turtle
         @visible = true
-        redraw
       end
       alias_method :st, :show_turtle
 
-      def change_size(size)
+      def set_size_to(size)
         @size = size
       end
     end

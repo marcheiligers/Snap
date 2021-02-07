@@ -7,6 +7,7 @@ class Snap
     include Motion
     include Looks
     include Drawing
+    # TODO: Add font and text rendering
 
     attr_reader :orig_image, :orig_data, :orig_width, :orig_height
     attr_reader :image, :display, :name, :lock
@@ -41,10 +42,6 @@ class Snap
       lock.synchronize do
         gc.draw_image(rotated_image(gc.device), 0, 0, w, h, x - w / 2, y - h / 2, w, h)
       end
-    end
-
-    def redraw
-      stage.paint
     end
 
     def cos(direction = @direction)

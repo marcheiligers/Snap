@@ -1,5 +1,4 @@
 require_relative '../../models/sprite'
-require_relative '../../models/turtle'
 require_relative '../../models/line'
 require_relative '../../models/oval'
 require_relative '../../models/circle'
@@ -28,12 +27,13 @@ class Snap
       canvas.add_paint_listener do |e|
         paint_background(e.gc)
         transformed(e.gc) do |gc|
+          puts objects.inspect
           objects.each { |o| o.draw(self, gc) }
           turtle.draw(self, gc)
         end
       end
 
-      @turtle = Turtle.new(parent.display, self)
+      @turtle = Sprite.new(parent.display, 'turtle', x: 500, y: 500, size: 10)
       reset
     end
 

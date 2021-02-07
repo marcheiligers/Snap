@@ -3,10 +3,11 @@ require_relative 'menu'
 require_relative 'editor'
 require_relative 'stage'
 require_relative '../../models/project'
+require_relative '../../models/executor'
 
 class Snap
   class App
-    attr_reader :shell, :sash_form, :stage, :editor, :temp_project, :project
+    attr_reader :shell, :sash_form, :stage, :editor, :temp_project, :project, :executor
 
     def initialize
       @temp_project = Project.new
@@ -75,26 +76,29 @@ class Snap
     end
 
     def on_run
-      code = editor.code
-
-      temp_project.code = code
-      temp_project.save
-
-      stage.turtle.run(code)
-      stage.paint
+      save_temp
+      run_code(editor.code)
     end
 
     def on_run_selection
+      save_temp
+      run_code(editor.selected_code)
+    end
+
+    def save_temp
       temp_project.code = editor.code
       temp_project.save
+    end
 
-      stage.turtle.run(editor.selected_code)
-      stage.paint
+    def run_code(code)
+      return if executor && executor.running?
+
+      @executor = Executor.new(stage.turtle, stage)
+      executor.exec(code)
     end
 
     def on_stop
-      stage.turtle.stop
-      stage.paint
+      executor.stop if executor
     end
 
     def on_reset

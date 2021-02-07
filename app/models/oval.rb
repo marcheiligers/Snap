@@ -1,5 +1,7 @@
+require_relative 'drawable'
+
 class Snap
-  class Oval
+  class Oval < Drawable
     attr_accessor :x, :y, :w, :h, :start, :arc, :color, :width
 
     def initialize(x: 0, y: 0, w: 0, h: 0, start: 0, arc: 360, color: [0, 0, 0, 255], width: 1)
