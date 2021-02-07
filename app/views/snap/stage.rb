@@ -5,11 +5,9 @@ require_relative '../../models/circle'
 
 class Snap
   class Stage
-    attr_reader :turtle, :canvas, :parent
+    attr_reader :turtle, :canvas, :parent, :drawables, :actors
 
     SIZE = 1_000.0 # Stage is a 1,000px square
-
-    attr_reader :turtle, :canvas, :objects
 
     def initialize(parent)
       @parent = parent
@@ -27,9 +25,8 @@ class Snap
       canvas.add_paint_listener do |e|
         paint_background(e.gc)
         transformed(e.gc) do |gc|
-          puts objects.inspect
-          objects.each { |o| o.draw(self, gc) }
-          turtle.draw(self, gc)
+          drawables.each { |d| d.draw(self, gc) }
+          actors.each { |a| a.draw(self, gc) }
         end
       end
 
@@ -37,12 +34,17 @@ class Snap
       reset
     end
 
-    def add(object)
-      objects << object
+    def add_drawable(drawable)
+      drawables << drawable
+    end
+
+    def add_actor(actor)
+      drawables << actor
     end
 
     def clear
-      @objects = []
+      @drawables = []
+      @actors = [turtle]
     end
 
     def zoom
@@ -64,6 +66,10 @@ class Snap
       clear
       turtle.goto(500, 500)
       turtle.face(0)
+      turtle.show_turtle
+      turtle.pen_size 1
+      turtle.pen_color 0, 0, 0
+      turtle.pen_down
 
       # Add a grid
       # [250, 500, 750].each do |grid|

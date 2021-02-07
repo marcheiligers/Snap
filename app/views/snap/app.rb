@@ -93,7 +93,7 @@ class Snap
     def run_code(code)
       return if executor && executor.running?
 
-      @executor = Executor.new(stage.turtle, stage)
+      @executor = Executor.new(stage)
       executor.exec(code)
     end
 
