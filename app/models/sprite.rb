@@ -47,6 +47,14 @@ class Snap
       stage.paint
     end
 
+    def cos(direction = @direction)
+      Math::cos(rad(direction))
+    end
+
+    def sin(direction = @direction)
+      Math::sin(rad(direction))
+    end
+
     private
 
     def zoomed_dimensions
@@ -137,14 +145,6 @@ class Snap
 
     def rad(direction = @direction)
       (direction / 360.0) * (Math::PI * 2)
-    end
-
-    def cos(direction = @direction)
-      Math::cos(rad(direction))
-    end
-
-    def sin(direction = @direction)
-      Math::sin(rad(direction))
     end
   end
 end

@@ -56,7 +56,7 @@ class Snap
       edit_select_all_item = Swt::Widgets::MenuItem.new(edit_menu, Swt::SWT::PUSH)
       edit_select_all_item.text = "&Select All...\t⌘A"
       edit_select_all_item.accelerator = (Swt::SWT::MOD1 + 'A'.ord)
-      edit_select_all_item.add_selection_listener { editor.set_selection 0, editor.text.length }
+      edit_select_all_item.add_selection_listener { publish(:select_all) }
 
       code_menu_header = Swt::Widgets::MenuItem.new(menu_bar, Swt::SWT::CASCADE)
       code_menu_header.text = '&Code'

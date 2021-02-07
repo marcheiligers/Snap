@@ -46,6 +46,10 @@ class Snap
       editor.paste
     end
 
+    def set_selection(start, fin)
+      editor.set_selection(start, fin)
+    end
+
     def init_editor
       font_name = parent.display.get_font_list(nil, true).map(&:name).include?('Consolas') ? 'Consolas' : 'Courier'
       editor = nil

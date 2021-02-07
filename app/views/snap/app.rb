@@ -114,6 +114,10 @@ class Snap
       editor.paste
     end
 
+    def on_select_all
+      editor.set_selection 0, editor.code.length
+    end
+
     def get_filepath(type)
       dialog = Swt::Widgets::FileDialog.new(shell, type)
       dialog.filter_extensions = %w[*.* *.snapproject]

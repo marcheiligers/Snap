@@ -30,9 +30,8 @@ class Snap
       end
       alias_method :fd, :forward
 
-      # TODO: Requires work, needs to draw under turtle
-      def circle(radius)
-        stage.add(Oval.new(x: x, y: y, w: radius * 2, h: radius * 2, color: pen_color, width: pen_size)) unless pen_up?
+      def circle(radius, arc = 360)
+        Circle.apply(stage, self, radius, arc) unless pen_up?
         wait(0.01)
       end
       alias_method :ci, :circle
