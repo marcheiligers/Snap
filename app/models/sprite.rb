@@ -94,9 +94,6 @@ class Snap
 
         rotation_transform(gc) do
           gc.draw_image(orig_image, 0, 0)
-          # gc.draw_rectangle(0, 0, orig_width, orig_height)
-          # gc.draw_rectangle(1, 1, orig_width - 1, orig_height - 1)
-          # gc.draw_rectangle(2, 2, orig_width - 2, orig_height - 2)
         end
 
         result
@@ -108,8 +105,8 @@ class Snap
     end
 
     def make_tranparent_image_data(w, h)
-      Gfx.ImageData.new(w, h, 32, orig_data.palette).tap do |image_data|
-        w.times { |x| h.times { |y| image_data.set_alpha(x, y, 0) } }
+      img = Gfx.ImageData.new(w, h, 32, orig_data.palette).tap do |image_data|
+        image_data.set_alphas(0, 0, w * h, Array.new(w * h, 0), 0)
       end
     end
 

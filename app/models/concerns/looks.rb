@@ -21,6 +21,7 @@ class Snap
 
       def set_size_to(size)
         @size = size
+        dispose_rotated_image
       end
     end
   end
