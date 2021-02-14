@@ -13,7 +13,7 @@ class Snap
     end
 
     def open
-      @shell = Shell.new(parent, Swt::SWT::TITLE | Swt::SWT::BORDER | Swt::SWT::APPLICATION_MODAL)
+      @shell = Shell.new(parent, Swt::SWT::SHEET | Swt::SWT::TITLE | Swt::SWT::BORDER | Swt::SWT::APPLICATION_MODAL)
       shell.text = "#{@actor.name} is asking..."
 
       shell.layout = GridLayout.new(2, true)
@@ -29,6 +29,7 @@ class Snap
       ok_button.text = 'Ok'
       ok_button.layout_data = GridData.new(GridData::HORIZONTAL_ALIGN_END)
       ok_button.add_selection_listener { |e| ok_click(e) }
+      shell.default_button = ok_button
 
       cancel_button = Button.new(shell, Swt::SWT::PUSH);
       cancel_button.text = 'Cancel'
@@ -36,6 +37,8 @@ class Snap
 
       shell.pack
       shell.open
+
+      text.set_focus
 
       while !shell.disposed?
         # check for and dispatch new gui events

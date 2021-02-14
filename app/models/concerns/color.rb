@@ -148,7 +148,7 @@ class Snap
     }
 
     def find_color(name)
-      COLOR_MAP[name.to_s.downcase.gsub(/_+/, '').strip]
+      COLOR_MAP[name.to_s.downcase.gsub(/_+/, ' ').strip]
     end
   end
 end

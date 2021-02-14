@@ -14,6 +14,24 @@ class Snap
     end
     alias_method :wt, :wait
 
+    def clear
+      @actor = stage.actors.first
+
+      stage.clear
+      stage.paint
+
+      wait
+    end
+
+    def reset
+      @actor = stage.actors.first
+
+      stage.reset
+      stage.paint
+
+      wait
+    end
+
     def add_sprite(name)
       normalized_name = name.to_s.downcase
       @actor = Sprite.new(stage.parent.display, normalized_name, x: 500, y: 500, size: 10)
@@ -69,7 +87,7 @@ class Snap
         drawable = case name
                    when :write then actor.write(args.first, stage)
                    when :ask then actor.ask(args.first, stage)
-                   else drawable = actor.send(name, *args)
+                   else actor.send(name, *args)
                    end
 
         # puts drawable.inspect
@@ -81,7 +99,6 @@ class Snap
       end
     rescue => e
       puts e.full_message
-      super(name, *args)
     end
   end
 end

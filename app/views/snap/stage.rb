@@ -71,6 +71,7 @@ class Snap
       turtle.pen_size 1
       turtle.pen_color 0, 0, 0
       turtle.pen_down
+      turtle.set_size_to(10)
 
       # Add a grid
       # [250, 500, 750].each do |grid|
