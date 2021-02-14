@@ -18,7 +18,7 @@ class Snap
     end
 
     def draw(stage, gc)
-      @line_attributes ||= Gfx.LineAttributes.new(width)
+      @line_attributes ||= Gfx.LineAttributes.new(width, Swt::SWT::CAP_ROUND, Swt::SWT::JOIN_ROUND)
       @col ||= Gfx.Color.new(gc.device, *color)
 
       gc.line_attributes = @line_attributes
