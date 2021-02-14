@@ -14,9 +14,8 @@ class Snap
         @font_size = size
       end
 
-      def write(string)
-        # TODO: measure string and move
-        Snap::String.new(
+      def write(string, stage) # HACK: Executor passes the stage
+        string = Snap::String.new(
           string: string,
           x: x,
           y: y,
@@ -24,7 +23,13 @@ class Snap
           font_size: font_size,
           color: pen_color,
           direction: direction
-        ) unless pen_up?
+        )
+
+        dist, _ = string.measure(stage)
+        @x = x + dist * Math.sin(rad)
+        @y = y - dist * Math.cos(rad)
+
+        string unless pen_up?
       end
     end
   end

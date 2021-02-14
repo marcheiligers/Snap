@@ -30,6 +30,25 @@ class Snap
       end
     end
 
+    def measure(stage)
+      pt = nil
+
+      stage.parent.display.sync_exec do
+        gc = Gfx.GC.new(stage.canvas);
+
+        @font ||= Gfx.Font.new(gc.device, find_font(gc.device, font_name), font_size, Swt::SWT::NORMAL)
+
+        gc.font = @font
+        pt = gc.text_extent(string, DRAW_STYLE)
+      rescue => e
+        puts e.full_message
+      ensure
+        gc.dispose if gc
+      end
+
+      [pt.x, pt.y]
+    end
+
     def rotation_transform(gc)
       old_transform = Gfx.Transform.new(gc.device)
       gc.get_transform(old_transform)

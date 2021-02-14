@@ -34,7 +34,6 @@ class Snap
       alias_method :ps, :pen_size
 
       def pen_color(*args) # nothing (reader), color_name, or r, g, b, a = 255
-        # TODO: support named colors
         if args.length == 0
           @pen_color
         elsif args.length == 1
