@@ -25,7 +25,8 @@ class Snap
         x2 = x + dist * Math.sin(rad)
         y2 = y - dist * Math.cos(rad)
 
-        goto x2, y2
+        @x = x2
+        @y = y2
 
         Line.new(x1: x1, y1: y1, x2: x2, y2: y2, color: pen_color, width: pen_size) unless pen_up?
       end
@@ -38,9 +39,13 @@ class Snap
       alias_method :ci, :circle
 
       def goto(x, y)
+        x1 = @x
+        y1 = @y
+
         @x = x
         @y = y
-        # TODO: return line unless pun_up?
+
+        Line.new(x1: x1, y1: y1, x2: x, y2: y, color: pen_color, width: pen_size) unless pen_up?
       end
 
       def face(dir)

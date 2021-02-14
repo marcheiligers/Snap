@@ -18,8 +18,11 @@ class Snap
     end
 
     def draw(stage, gc)
-      gc.line_attributes = Gfx.LineAttributes.new(width)
-      gc.foreground = Gfx.Color.new(gc.device, *color)
+      @line_attributes ||= Gfx.LineAttributes.new(width)
+      @col ||= Gfx.Color.new(gc.device, *color)
+
+      gc.line_attributes = @line_attributes
+      gc.foreground = @col
       gc.draw_line(x1, y1, x2, y2)
     end
   end

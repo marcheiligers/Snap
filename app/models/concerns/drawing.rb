@@ -15,12 +15,12 @@ class Snap
       end
 
       def pen_up
-        @pen_up = true
+        @pen_is_up = true
       end
       alias_method :pu, :pen_up
 
       def pen_down
-        @pen_up = false
+        @pen_is_up = false
       end
       alias_method :pd, :pen_down
 

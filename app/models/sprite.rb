@@ -1,13 +1,14 @@
 require_relative 'concerns/motion'
 require_relative 'concerns/looks'
 require_relative 'concerns/drawing'
+require_relative 'concerns/text'
 
 class Snap
   class Sprite
     include Motion
     include Looks
     include Drawing
-    # TODO: Add font and text rendering
+    include Text
 
     attr_reader :orig_image, :orig_data, :orig_width, :orig_height
     attr_reader :image, :display, :name, :lock
@@ -24,6 +25,7 @@ class Snap
       init_motion(x: x, y: y, direction: direction)
       init_drawing(size: 1, color: [0, 0, 0, 255], up: false)
       init_looks(size: size, visible: true)
+      init_text
       @size = size
 
       @visible = true
@@ -38,7 +40,7 @@ class Snap
     def draw(stage, gc)
       return unless visible?
 
-      w, h = rotated_dimensions(*zoomed_dimensions)
+      w, h = rotated_dimensions
       lock.synchronize do
         gc.draw_image(rotated_image(gc.device), 0, 0, w, h, x - w / 2, y - h / 2, w, h)
       end
@@ -50,6 +52,24 @@ class Snap
 
     def sin(direction = @direction)
       Math::sin(rad(direction))
+    end
+
+    def rotated_dimensions
+      w, h = zoomed_dimensions
+      w1 = h1 = 0
+      r1 = direction % 180
+
+      if r1 < 90
+        w1 = w * cos(r1) + h * sin(r1)
+        h1 = w * sin(r1) + h * cos(r1)
+      else
+        w1 = h * cos(r1 - 90) + w * sin(r1 - 90)
+        h1 = h * sin(r1 - 90) + w * cos(r1 - 90)
+      end
+
+      # weirdly, this makes no difference to the placement of the image
+      #   but fixes an issue where the top part of the image is cut off when drawing transparently
+      [w1.ceil * 2, h1.ceil * 2]
     end
 
     private
@@ -67,26 +87,9 @@ class Snap
       [w, h]
     end
 
-    def rotated_dimensions(w, h)
-      w1 = h1 = 0
-      r1 = direction % 180
-
-      if r1 < 90
-        w1 = w * cos(r1) + h * sin(r1)
-        h1 = w * sin(r1) + h * cos(r1)
-      else
-        w1 = h * cos(r1 - 90) + w * sin(r1 - 90)
-        h1 = h * sin(r1 - 90) + w * cos(r1 - 90)
-      end
-
-      # weirdly, this makes no difference to the placement of the image
-      #   but fixes an issue where the top part of the image is cut off when drawing transparently
-      [w1.ceil * 2, h1.ceil * 2]
-    end
-
     def rotated_image(device)
       @rotated_image ||= begin
-        w1, h1 = rotated_dimensions(*zoomed_dimensions)
+        w1, h1 = rotated_dimensions
         transparent_image_data = make_tranparent_image_data(w1, h1)
         result = Gfx.Image.new(device, transparent_image_data)
         gc = Gfx.GC.new(result)
@@ -122,7 +125,7 @@ class Snap
     def rotation_transform(gc)
       transform = Gfx.Transform.new(gc.display)
 
-      w1, h1 = rotated_dimensions(*zoomed_dimensions)
+      w1, h1 = rotated_dimensions
       transform.translate(w1 / 2, h1 / 2)
 
       transform.scale(size / 100.0, size / 100.0)

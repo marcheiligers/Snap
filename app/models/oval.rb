@@ -16,8 +16,11 @@ class Snap
     end
 
     def draw(stage, gc)
-      gc.line_attributes = Gfx.LineAttributes.new(width)
-      gc.foreground = Gfx.Color.new(gc.device, *color)
+      @line_attributes ||= Gfx.LineAttributes.new(width)
+      @col ||= Gfx.Color.new(gc.device, *color)
+
+      gc.line_attributes = @line_attributes
+      gc.foreground = @col
 
       # https://javadoc.scijava.org/Eclipse/org/eclipse/swt/graphics/GC.html#drawArc(int,int,int,int,int,int)
       # Angles are interpreted such that 0 degrees is at the 3 o'clock position. A positive value indicates a

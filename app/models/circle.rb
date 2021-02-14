@@ -10,7 +10,7 @@ class Snap
       new_x = center_x - sprite.sin(90 - new_dir) * radius
       new_y = center_y - sprite.cos(90 - new_dir) * radius
 
-      circle =new(
+      circle = new(
         x: sprite.x - (radius - dx),
         y: sprite.y - (radius - dy),
         w: radius * 2,

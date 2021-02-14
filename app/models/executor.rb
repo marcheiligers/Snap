@@ -23,7 +23,7 @@ class Snap
     end
     alias_method :as, :add_sprite
 
-    def using(name)
+    def switch_to(name)
       normalized_name = name.to_s.downcase
       actor = stage.actors.detect { |a| a.name == normalized_name }
       if actor
@@ -66,9 +66,11 @@ class Snap
       # puts actor.respond_to?(name)
       if actor.respond_to?(name)
         drawable = actor.send(name, *args)
+        # puts drawable.inspect
         stage.add_drawable(drawable) if drawable && drawable.is_a?(Drawable)
         stage.paint
         wait
+        drawable
       end
     rescue => e
       puts e.full_message
