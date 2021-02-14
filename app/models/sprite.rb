@@ -2,6 +2,7 @@ require_relative 'concerns/motion'
 require_relative 'concerns/looks'
 require_relative 'concerns/drawing'
 require_relative 'concerns/text'
+require_relative 'concerns/input'
 
 class Snap
   class Sprite
@@ -9,6 +10,7 @@ class Snap
     include Looks
     include Drawing
     include Text
+    include Input
 
     attr_reader :orig_image, :orig_data, :orig_width, :orig_height
     attr_reader :image, :display, :name, :lock

@@ -65,16 +65,18 @@ class Snap
       # puts actor.inspect
       # puts actor.respond_to?(name)
       if actor.respond_to?(name)
-        # HACK: Need to measure the string
-        if name == :write
-          drawable = actor.write(args.first, stage)
-        else
-          drawable = actor.send(name, *args)
-        end
+        # HACK: Some commands need the stage
+        drawable = case name
+                   when :write then actor.write(args.first, stage)
+                   when :ask then actor.ask(args.first, stage)
+                   else drawable = actor.send(name, *args)
+                   end
+
         # puts drawable.inspect
         stage.add_drawable(drawable) if drawable && drawable.is_a?(Drawable)
         stage.paint
         wait
+
         drawable
       end
     rescue => e

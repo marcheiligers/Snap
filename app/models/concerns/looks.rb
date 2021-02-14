@@ -1,7 +1,7 @@
 class Snap
   class Sprite
     module Looks
-      attr_reader :size, :visible
+      attr_accessor :size, :visible
       alias_method :visible?, :visible
 
       def init_looks(size: 100, visible: true)

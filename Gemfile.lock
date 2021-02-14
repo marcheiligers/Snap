@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/marcheiligers/swt
-  revision: fc51b5bf72a50e0892dc8e6f330c11502a9cbfac
-  ref: fc51b5b
+  revision: 46a953b2174d4f774700ada29438149c746f9274
+  ref: 46a953b
   specs:
     swt (4.18.0)
 

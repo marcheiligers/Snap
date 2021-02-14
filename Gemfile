@@ -4,4 +4,4 @@ source 'https://rubygems.org'
 
 git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
-gem 'swt', github: 'marcheiligers/swt', ref: 'fc51b5b'
+gem 'swt', github: 'marcheiligers/swt', ref: '46a953b'

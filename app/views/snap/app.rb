@@ -2,6 +2,7 @@ require_relative '../concerns/publisher'
 require_relative 'menu'
 require_relative 'editor'
 require_relative 'stage'
+require_relative 'string_dialog'
 require_relative '../../models/project'
 require_relative '../../models/executor'
 
