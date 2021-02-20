@@ -76,6 +76,10 @@ class Snap
       puts e.full_message
     end
 
+    def on_quit
+      shell.dispose
+    end
+
     def on_run
       save_temp
       run_code(editor.code)

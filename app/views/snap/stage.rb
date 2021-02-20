@@ -6,21 +6,31 @@ require_relative '../../models/circle'
 
 class Snap
   class Stage
-    attr_reader :turtle, :canvas, :parent, :drawables, :actors
+    attr_reader :turtle, :canvas, :parent, :drawables, :actors, :inspect_text
 
     SIZE = 1_000.0 # Stage is a 1,000px square
 
+    include Swt::Widgets
+    include Swt::Layout
+    include Swt::Custom
+
     def initialize(parent)
       @parent = parent
+      font_name = parent.display.get_font_list(nil, true).map(&:name).include?('Consolas') ? 'Consolas' : 'Courier'
 
-      composite = Swt::Widgets::Composite.new(parent, 0)
-      layout = Swt::Layout::FillLayout.new
+
+      composite = Composite.new(parent, 0)
+      layout = FillLayout.new
       layout.marginWidth = 4
       layout.marginHeight = 4
       composite.layout = layout
       composite.background = Config.instance.theme.background
 
-      @canvas = Swt::Widgets::Canvas.new(composite, 0)
+      @sash_form = SashForm.new(composite, Swt::SWT::VERTICAL)
+      @sash_form.sash_width = 8
+      @sash_form.background = Config.instance.theme.sash_color
+
+      @canvas = Canvas.new(@sash_form, 0)
       canvas.background = Config.instance.theme.background
 
       canvas.add_paint_listener do |e|
@@ -33,6 +43,23 @@ class Snap
 
       @turtle = Sprite.new(parent.display, 'turtle', x: 500, y: 500, size: 10)
       reset
+
+      folder = TabFolder.new(@sash_form, Swt::SWT::NONE)
+
+      inspect_tab = TabItem.new(folder, Swt::SWT::NONE)
+      inspect_tab.text = 'Inspect'
+      @inspect_text = Text.new(folder, Swt::SWT::BORDER | Swt::SWT::MULTI | Swt::SWT::V_SCROLL | Swt::SWT::H_SCROLL);
+      update_inspector
+      inspect_text.font = Gfx.Font.new(display, font_name, 15, Swt::SWT::NORMAL)
+      inspect_tab.control = inspect_text
+
+      error_tab = TabItem.new(folder, Swt::SWT::NONE)
+      error_tab.text = 'Error'
+
+      help_tab = TabItem.new(folder, Swt::SWT::NONE)
+      help_tab.text = 'Help'
+      help_browser = Swt::Browser.new(folder, Swt::SWT::NONE)
+      help_tab.control = help_browser
     end
 
     def add_drawable(drawable)
@@ -40,7 +67,7 @@ class Snap
     end
 
     def add_actor(actor)
-      drawables << actor
+      actors << actor
     end
 
     def clear
@@ -58,9 +85,20 @@ class Snap
     end
 
     def paint
-      parent.display.sync_exec { canvas.redraw }
+      parent.display.sync_exec do
+        canvas.redraw
+        update_inspector
+      end
     rescue => e
       puts e.full_message
+    end
+
+    def update_inspector
+      inspect_text.text = "Sprites\n" +
+                          actors.map { |a| a.inspect }.join("\n")
+                          #  +
+                          # "\n\nDrawables\n" +
+                          # drawables.map { |a| a.inspect }.join("\n")
     end
 
     def reset

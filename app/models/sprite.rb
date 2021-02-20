@@ -19,7 +19,7 @@ class Snap
       @display = display
       @name = name
 
-      @orig_data = load_image_data # Gfx.ImageData.new(path_from_default)
+      @orig_data = load_image_data
       @orig_image = Gfx.Image.new(@display, @orig_data)
       @orig_width = @orig_data.width
       @orig_height = @orig_data.height
@@ -35,37 +35,16 @@ class Snap
       @lock = Mutex.new
     end
 
-    def path_from_default
-      filename = File.expand_path("../../images/#{name}.png", __dir__)
-      puts filename
-      if filename.include?('classloader')
-        puts 'using 1'
-        java.lang.Object.new.java_class.resource("/snap/images/#{name}.png")
-      else
-        puts 'using 2'
-        filename
-      end
+    def load_image_data
+      path_or_stream = File.expand_path("../../images/#{name}.png", __dir__)
+      path_or_stream = resource_as_stream if path_or_stream.include?('classloader')
+      Gfx.ImageData.new(path_or_stream)
+    ensure
+      path_or_stream.close if path_or_stream && path_or_stream.respond_to?(:close)
     end
 
-    def load_image_data
-      filename = File.expand_path("../../images/#{name}.png", __dir__)
-      if filename.include?('classloader')
-        img_data = nil
-        begin
-          # res_name = java.lang.Object.new.java_class.resource("/snap/images/#{name}.png")
-          # puts res_name
-          # stream = self.to_java.get_class.get_class_loader.get_resource_as_stream(res_name)
-          stream = self.to_java.get_class.get_class_loader.get_resource_as_stream("/snap/images/#{name}.png")
-          image_data = Gfx.ImageData.new(stream)
-        rescue => e
-          puts e.full_message
-        ensure
-          stream.close if stream
-        end
-        img_data
-      else
-        Gfx.ImageData.new(filename)
-      end
+    def resource_as_stream
+      java.lang.Object.new.java_class.resource_as_stream("/snap/images/#{name}.png")
     end
 
     def draw(stage, gc)

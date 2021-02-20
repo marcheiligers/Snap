@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/marcheiligers/swt
-  revision: 46a953b2174d4f774700ada29438149c746f9274
-  ref: 46a953b
+  revision: 6a72012931dcb9575e926d6c1b96cb24c6a4dfd1
+  ref: 6a72012
   specs:
     swt (4.18.0)
 
@@ -10,6 +10,7 @@ GEM
   specs:
     jruby-jars (9.2.14.0)
     jruby-rack (1.1.21)
+    os (1.1.1)
     rake (13.0.3)
     rubyzip (1.3.0)
     warbler (2.0.5)
@@ -22,6 +23,7 @@ PLATFORMS
   universal-java-1.8
 
 DEPENDENCIES
+  os
   swt!
   warbler
 
