@@ -22,6 +22,16 @@ ffmpeg -i 21-01-24_snap_demo.mov -pix_fmt rgb24 -r 24 -s 1440x900 snap_demo1.gif
 convert -layers Optimize snap_demo1.gif snap_demo1o.gif
 ```
 
+### Building Windows
+
+[VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+[Windows VMs](https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/)
+[Edge](https://www.microsoft.com/en-us/edge)
+[OpenJDK](https://adoptopenjdk.net)
+[JRuby](https://www.jruby.org/download)
+[Git](https://git-scm.com/downloads)
+
+
 ## Contributing
 
 * Check out the latest master to make sure the feature hasn't been

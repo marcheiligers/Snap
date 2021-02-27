@@ -8,6 +8,8 @@ require_relative '../../models/executor'
 
 class Snap
   class App
+    using Preferences::Refinements
+
     attr_reader :shell, :sash_form, :stage, :editor, :temp_project, :project, :executor
 
     def initialize
@@ -19,15 +21,14 @@ class Snap
 
       # Set the window title bar text
       shell.text = 'Snap'
-      shell.set_size(640, 480)
       shell.set_minimum_size(320, 240)
-      shell.background = Config.instance.theme.background
+      shell.background = Preferences.theme.background.as_color
       # image File.join(APP_ROOT, 'package', 'windows', 'Snap.ico') if OS.windows?
 
       shell.layout = Swt::Layout::FillLayout.new
       @sash_form = Swt::Custom::SashForm.new(shell, Swt::SWT::HORIZONTAL)
       @sash_form.sash_width = 8
-      @sash_form.background = Config.instance.theme.sash_color
+      @sash_form.background = Preferences.theme.sash.as_color
 
       @menu = Menu.new(shell)
       @menu.subscribe(self)
@@ -35,7 +36,9 @@ class Snap
       @editor.subscribe(self)
       @stage = Stage.new(sash_form)
 
-      @shell.open
+      shell.pack
+      shell.set_size(640, 480)
+      shell.open
     end
 
     def display
@@ -77,6 +80,7 @@ class Snap
     end
 
     def on_quit
+      Preferences.save
       shell.dispose
     end
 

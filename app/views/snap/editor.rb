@@ -4,6 +4,7 @@ class Snap
   class Editor
     extend Forwardable
     include Publisher
+    using Preferences::Refinements
 
     attr_reader :editor, :parent
 
@@ -38,7 +39,7 @@ class Snap
 
       composite = Swt::Widgets::Composite.new(parent, 0)
       composite.layout = Swt::Layout::GridLayout.new
-      composite.background = Config.instance.theme.background
+      composite.background = Preferences.theme.background.as_color
 
       # TODO: Syntax highlighting
       # See: http://www.java2s.com/Code/Java/SWT-JFace-Eclipse/JavaSourcecodeViewer.htm
@@ -50,7 +51,7 @@ class Snap
 
       button_composite = Swt::Widgets::Composite.new(composite, 0)
       button_composite.layout = Swt::Layout::RowLayout.new
-      button_composite.background = Config.instance.theme.background
+      button_composite.background = Preferences.theme.background.as_color
 
       # TODO: add button images
 

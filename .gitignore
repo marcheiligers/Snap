@@ -62,3 +62,4 @@ vendor/jars
 
 # Snap
 .snapproject
+.snapconfig

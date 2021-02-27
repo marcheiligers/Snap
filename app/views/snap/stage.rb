@@ -6,13 +6,14 @@ require_relative '../../models/circle'
 
 class Snap
   class Stage
-    attr_reader :turtle, :canvas, :parent, :drawables, :actors, :inspect_text
-
-    SIZE = 1_000.0 # Stage is a 1,000px square
-
     include Swt::Widgets
     include Swt::Layout
     include Swt::Custom
+    using Preferences::Refinements
+
+    attr_reader :turtle, :canvas, :parent, :drawables, :actors, :inspect_text
+
+    SIZE = 1_000.0 # Stage is a 1,000px square
 
     def initialize(parent)
       @parent = parent
@@ -24,14 +25,14 @@ class Snap
       layout.marginWidth = 4
       layout.marginHeight = 4
       composite.layout = layout
-      composite.background = Config.instance.theme.background
+      composite.background = Preferences.theme.background.as_color
 
       @sash_form = SashForm.new(composite, Swt::SWT::VERTICAL)
       @sash_form.sash_width = 8
-      @sash_form.background = Config.instance.theme.sash_color
+      @sash_form.background = Preferences.theme.sash.as_color
 
       @canvas = Canvas.new(@sash_form, 0)
-      canvas.background = Config.instance.theme.background
+      canvas.background = Preferences.theme.background.as_color
 
       canvas.add_paint_listener do |e|
         paint_background(e.gc)

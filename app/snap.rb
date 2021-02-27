@@ -2,8 +2,13 @@ $LOAD_PATH.unshift(__dir__)
 
 require 'bundler/setup'
 Bundler.require(:default)
+
+require 'config'
+require_relative 'models/preferences'
+
+Snap::Preferences.load
+
 require_relative 'views/snap/app'
-require_relative 'models/config'
 
 class Snap
   Gfx = org.eclipse.swt.graphics
